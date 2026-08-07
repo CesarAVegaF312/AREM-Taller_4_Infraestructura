@@ -6,6 +6,10 @@ Construir el mapa lógico y/o físico de la infraestructura tecnológica del sis
 
 ---
 
+## 📘 Guía paso a paso
+
+Antes de empezar a modelar, revise la [**Guía Paso a Paso: Mapa de Infraestructura y Diagnóstico Técnico**](clase/guia_paso_a_paso_infraestructura.md). Incluye la leyenda de notación, la metodología de 5 pasos (mapa + diagnóstico) que se usa en el taller, un ejemplo completo construido paso a paso sobre el caso de RedExpress con una tabla de diagnóstico priorizado, y una comparación de errores comunes.
+
 ## 🚚 Caso base de referencia: RedExpress (Plataforma de Logística)
 
 RedExpress cuenta con una infraestructura híbrida que incluye servidores regionales, servicios en la nube, centros de distribución físicos y dispositivos móviles utilizados por los mensajeros. La plataforma digital debe garantizar alta disponibilidad y rendimiento, especialmente durante campañas promocionales o temporadas de alto volumen como Navidad. El mapa de infraestructura y el diagnóstico técnico permitirán visualizar riesgos como puntos únicos de falla, cuellos de botella en bases de datos, y limitaciones en la escalabilidad horizontal de servicios críticos.
@@ -34,11 +38,16 @@ RedExpress cuenta con una infraestructura híbrida que incluye servidores region
 
 Durante la clase se espera que el equipo:
 
-- Modele un mapa de infraestructura preliminar de RedExpress.
-- Identifique zonas sensibles de carga, disponibilidad, monitoreo o redundancia.
+Siga la metodología de 5 pasos de la [guía paso a paso](clase/guia_paso_a_paso_infraestructura.md) para construir el mapa de infraestructura de RedExpress:
+
+1. Identifique los componentes de infraestructura (servidores, servicios, bases de datos, balanceadores, etc.).
+2. Agrúpelos por zona geográfica o capa.
+3. Conecte los componentes según el tráfico real entre ellos.
+4. Marque qué componentes críticos tienen redundancia y cuáles son instancia única.
+5. Diagnostique y priorice los riesgos, y valide el mapa con la [checklist de autoevaluación](clase/guia_paso_a_paso_infraestructura.md#5-checklist-de-autoevaluación-antes-de-entregar).
+
 - Use papel, draw.io o cualquier herramienta visual para registrar su análisis.
-- Documente posibles problemas y cómo podrían abordarse.
-- Reciba retroalimentación en vivo del docente.
+- Reciba retroalimentación del docente y registre avances en `clase/notas.md` (use la [plantilla de notas](plantillas/plantilla_notas.md)).
 
 ---
 
@@ -46,28 +55,37 @@ Durante la clase se espera que el equipo:
 
 Después de la clase, el equipo debe:
 
-- Elaborar el mapa de infraestructura del sistema real del cliente.
-- Identificar debilidades o cuellos de botella reales o potenciales.
-- Redactar un informe explicando el diagnóstico técnico.
-- Complementar con una pequeña investigación sobre buenas prácticas de arquitectura de infraestructura (cloud, on-premise, híbrida).
+- Elaborar el mapa de infraestructura del sistema real del cliente, aplicando los mismos 5 pasos de la metodología.
+- Identificar debilidades o cuellos de botella reales o potenciales, y clasificarlos igual que en la tabla de diagnóstico de la guía (disponibilidad, rendimiento, escalabilidad).
+- Redactar el informe en `entrega/informe.md` usando la [plantilla de informe del taller](plantillas/plantilla_informe_taller.md); explicar el diagnóstico técnico y las diferencias con el caso base.
+- Complementar con una pequeña investigación sobre buenas prácticas de arquitectura de infraestructura (cloud, on-premise, híbrida), y registrar las fuentes en `entrega/referencias.md` con la [plantilla de referencias](plantillas/plantilla_referencias.md).
 
 ---
 
 ## 📁 Estructura esperada del repositorio
 
-```
+```text
 taller-04-infraestructura/
 ├── README.md
 ├── clase/
+│   ├── guia_paso_a_paso_infraestructura.md   # Notación, metodología de 5 pasos y ejemplo guiado
 │   ├── mapa-borrador.drawio
-│   └── notas.md
+│   └── notas.md                              # Ver plantillas/plantilla_notas.md
 ├── entrega/
 │   ├── mapa-final.drawio
-│   ├── informe.md
-│   └── referencias.md
+│   ├── informe.md                            # Ver plantillas/plantilla_informe_taller.md
+│   └── referencias.md                        # Ver plantillas/plantilla_referencias.md
+└── plantillas/
+    ├── plantilla_informe_taller.md
+    ├── plantilla_notas.md
+    └── plantilla_referencias.md
 ```
 
 ---
+
+## ⚠️ Errores comunes
+
+Antes de entregar, compare su mapa y diagnóstico contra los errores más frecuentes (componentes sin agrupar, redundancia sin marcar, diagnóstico desconectado del mapa) documentados en la [sección 4 de la guía paso a paso](clase/guia_paso_a_paso_infraestructura.md#4-errores-comunes-a-evitar).
 
 ## 📤 Entregables
 
