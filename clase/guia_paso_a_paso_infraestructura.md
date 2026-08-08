@@ -246,4 +246,31 @@ flowchart TD
 
 ---
 
+## 6. Vista ArchiMate equivalente
+
+Los componentes del mapa de infraestructura mapean a la **capa de Tecnología** de ArchiMate (ver la [Guía de Notación ArchiMate](https://github.com/CesarAVegaF312/AREM-ArchiMate/blob/main/guia_notacion_archimate.md)): servidores y balanceadores son **Nodes/Devices**, y cada uno se conecta al **Application Component** (Taller 3) que aloja mediante la relación **Assignment**.
+
+```mermaid
+flowchart TD
+    subgraph aplicacion["Aplicación (Taller 3)"]
+        gestion["Módulo de Gestión de Paquetes"]
+    end
+    subgraph tecnologia["Tecnología"]
+        lb["⚠️ Balanceador de Carga"]
+        nodo["Nodo de Aplicación"]
+    end
+
+    lb -->|"sirve a"| nodo
+    nodo -->|"asignado a"| gestion
+
+    classDef aplicacion fill:#99ccff,color:#000,stroke:#3366cc;
+    classDef tecnologia fill:#ccffcc,color:#000,stroke:#339933;
+    class gestion aplicacion
+    class lb,nodo tecnologia
+```
+
+El componente marcado como riesgo en la tabla de diagnóstico (Paso 5) es exactamente el mismo `Device`/`Node` que después, en el Taller 7, se convierte en el origen de un **Gap** de la capa de Implementación y Migración — la trazabilidad no se pierde entre talleres, solo cambia la capa de ArchiMate en la que se mira.
+
+---
+
 _Esta guía hace parte del Taller 4 de Mapa de Infraestructura y Diagnóstico Técnico — curso Arquitectura Empresarial, Universidad de La Sabana._
