@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa de infraestructura y diagnóstico técnico · RedExpress · AREM</title>
+<style>
+  :root{
+    --paper:#F2F1EA;
+    --ink:#14263C;
+    --ink-soft:#3B4C5E;
+    --threat:#B4552B;
+    --control:#1C7150;
+    --steel:#5F7387;
+    --rule:#C9C6B8;
+    --card:#FBFAF6;
+    --grid:rgba(20,38,60,.055);
+    --mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none !important} }
+
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.55;
+    background-image:
+      repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 28px),
+      repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 28px);
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+  /* ---------- estructura de lámina ---------- */
+  .sheet{border:1px solid var(--rule);background:rgba(251,250,246,.72);margin:34px 0;position:relative}
+  .sheet::before,.sheet::after{content:"";position:absolute;width:13px;height:13px;border:1px solid var(--steel);opacity:.5}
+  .sheet::before{top:-7px;left:-7px;border-right:0;border-bottom:0}
+  .sheet::after{bottom:-7px;right:-7px;border-left:0;border-top:0}
+  .sheet-inner{padding:34px}
+  @media(max-width:720px){ .sheet-inner{padding:20px} .wrap{padding:0 14px} }
+
+  .ref{font-family:var(--mono);font-size:11.5px;color:var(--steel);letter-spacing:.04em}
+
+  h1{font-size:clamp(34px,6vw,62px);line-height:1.02;letter-spacing:-.025em;font-weight:800;margin:.1em 0 .25em}
+  h2{font-size:clamp(24px,3.4vw,34px);line-height:1.12;letter-spacing:-.018em;font-weight:800;margin:0 0 6px}
+  h3{font-size:19px;letter-spacing:-.01em;font-weight:700;margin:0 0 6px}
+  .lede{font-size:19px;color:var(--ink-soft);max-width:62ch;margin:0}
+  p{max-width:70ch}
+  a{color:var(--threat)}
+
+  /* ---------- cabecera ---------- */
+  header.top{border-bottom:1px solid var(--rule);background:var(--ink);color:#EAF0F4}
+  header.top .wrap{display:flex;justify-content:space-between;align-items:baseline;padding-top:14px;padding-bottom:14px;gap:16px;flex-wrap:wrap}
+  header.top .ref{color:#8CA6BA}
+  nav.jump{display:flex;gap:18px;flex-wrap:wrap}
+  nav.jump a{color:#EAF0F4;text-decoration:none;font-family:var(--mono);font-size:12px;border-bottom:1px solid transparent;padding-bottom:2px}
+  nav.jump a:hover,nav.jump a:focus-visible{border-bottom-color:#E0A06B}
+
+  .hero{padding:52px 0 8px}
+  .hero h1{max-width:20ch}
+
+  /* ---------- diagrama ---------- */
+  .lab{display:grid;grid-template-columns:1.55fr 1fr;gap:0}
+  @media(max-width:940px){ .lab{grid-template-columns:1fr} }
+  .canvas{border-right:1px solid var(--rule);padding:22px}
+  @media(max-width:940px){ .canvas{border-right:0;border-bottom:1px solid var(--rule)} }
+  .panel{padding:22px;min-width:0}
+
+  svg.dfd{width:100%;height:auto;display:block}
+  svg.dfd text{font-family:var(--sans);fill:var(--ink)}
+  svg.dfd .nlabel{font-size:12px;font-weight:700}
+  svg.dfd .nsub{font-size:9.5px;fill:#A9BCC9;font-family:var(--mono)}
+  svg.dfd .zlabel{font-size:10px;font-family:var(--mono);fill:var(--steel);letter-spacing:.05em}
+  svg.dfd .flabel{font-size:10px;font-family:var(--mono);fill:var(--ink-soft)}
+  .hit{cursor:pointer}
+  .hit:focus-visible{outline:2px solid var(--threat);outline-offset:2px}
+  .flowline{stroke:var(--steel);stroke-width:1.6;fill:none}
+  .flowline.dashed{stroke-dasharray:5 4}
+
+  /* ---------- panel de diagnóstico ---------- */
+  .panel .empty{border:1px dashed var(--rule);padding:18px;color:var(--ink-soft);font-size:15px}
+  .flowtitle{font-family:var(--mono);font-size:12px;color:var(--threat);letter-spacing:.03em;margin-bottom:2px}
+  .threat{border-top:2px solid var(--ink);padding:12px 0}
+  .threat .row{display:flex;gap:12px;align-items:flex-start}
+  .letter{
+    font-family:var(--mono);font-weight:700;font-size:17px;color:var(--paper);background:var(--ink);
+    width:28px;height:28px;display:grid;place-items:center;flex:none
+  }
+  .threat h4{margin:0 0 2px;font-size:15px}
+  .threat p{margin:0;font-size:14px;line-height:1.5;color:var(--ink-soft)}
+  .ctrl{margin-top:6px;font-size:13.5px;font-weight:700;color:var(--control);border-left:2px solid var(--control);padding-left:9px}
+  .ctrl.prio-alta{color:var(--threat);border-left-color:var(--threat)}
+  .ctrl.prio-media{color:var(--steel);border-left-color:var(--steel)}
+
+  /* ---------- tablas ---------- */
+  table{border-collapse:collapse;width:100%;font-size:14.5px}
+  th,td{border:1px solid var(--rule);padding:9px 11px;text-align:left;vertical-align:top}
+  thead th{background:var(--ink);color:var(--paper);font-weight:700;font-size:13px}
+  td.prio-alta{color:var(--threat);font-weight:700}
+  td.prio-media{color:var(--steel);font-weight:700}
+
+  /* ---------- piezas ---------- */
+  .cols{display:grid;gap:20px}
+  .c2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:860px){ .c2{grid-template-columns:1fr} }
+  .block{border:1px solid var(--rule);background:var(--card);padding:18px}
+  .block.threatline{border-top:3px solid var(--threat)}
+  .block.controlline{border-top:3px solid var(--control)}
+  .block.inkline{border-top:3px solid var(--ink)}
+  .block p{font-size:15px;color:var(--ink-soft);margin:0}
+
+  .steps{counter-reset:s;display:grid;gap:12px}
+  .step{display:flex;gap:14px;border:1px solid var(--rule);background:var(--card);padding:14px 16px}
+  .step .n{font-family:var(--mono);font-size:13px;color:var(--threat);flex:none;padding-top:2px}
+  .step p{margin:4px 0 0;font-size:15px;color:var(--ink-soft)}
+
+  .callout{border:1px solid var(--ink);background:var(--ink);color:#EAF0F4;padding:20px 22px}
+  .callout p{color:#C6D6E1;margin:0;max-width:78ch}
+  .callout strong{color:#E0A06B}
+
+  .note{font-size:14px;color:var(--steel);max-width:78ch}
+  footer{border-top:1px solid var(--rule);margin-top:40px;padding:26px 0 50px}
+  footer p{font-family:var(--mono);font-size:12px;color:var(--steel)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="ref">AREM · Módulo 4 · Hoja de infraestructura y riesgo</span>
+    <nav class="jump" aria-label="Secciones">
+      <a href="#mapa">Mapa interactivo</a>
+      <a href="#leyenda">Notación</a>
+      <a href="#metodologia">Metodología</a>
+      <a href="#diagnostico">Diagnóstico priorizado</a>
+      <a href="#errores">Errores comunes</a>
+      <a href="#archimate">Vista ArchiMate</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <p class="ref">Universidad de La Sabana · Arquitectura Empresarial</p>
+    <h1>Del inventario de componentes al diagnóstico de riesgo.</h1>
+    <p class="lede">RedExpress opera una infraestructura híbrida por zonas: clientes, borde global y dos regiones con distinta madurez de despliegue. Esta hoja recorre el mapa de infraestructura del caso base y el diagnóstico técnico que se deriva de él — puntos únicos de falla, cuellos de botella y límites de escalabilidad — exactamente como se construyeron en la guía paso a paso. Empiece por el diagrama: los componentes marcados con ⚠️ son clickeables.</p>
+  </section>
+
+  <!-- ============ MAPA INTERACTIVO ============ -->
+  <section class="sheet" id="mapa">
+    <div class="lab">
+      <div class="canvas">
+        <p class="ref">01 · El mapa</p>
+        <h2>Infraestructura de RedExpress por zonas</h2>
+        <p class="note" style="margin:2px 0 14px">Cuatro zonas: Clientes, Borde / Global, Región Bogotá y Región Medellín. Cada rectángulo punteado es el límite de una zona.</p>
+        <div id="diagram"></div>
+        <p class="note" style="margin-top:12px">El tráfico de clientes entra por el balanceador de carga, que enruta a cada API Gateway regional. Medellín no tiene módulo de rutas propio: su tráfico depende del módulo de Bogotá (línea marcada "cuello de botella"). Ambas regiones escriben en la misma base de datos y reportan al servicio de monitoreo (líneas punteadas).</p>
+      </div>
+      <div class="panel">
+        <p class="ref">Diagnóstico</p>
+        <div id="detail">
+          <div class="empty">Seleccione un componente marcado con ⚠️ para ver su categoría de riesgo, el impacto si ocurre y la prioridad de atención, tal como está en la tabla de diagnóstico.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEYENDA ============ -->
+  <section class="sheet" id="leyenda">
+    <div class="sheet-inner">
+      <p class="ref">02 · Notación</p>
+      <h2>Leyenda del mapa de infraestructura</h2>
+      <p class="lede" style="margin-bottom:18px">La misma notación que usa la guía paso a paso, para poder pasar del diagrama de esta hoja al diagrama en Mermaid o draw.io sin traducir símbolos.</p>
+      <table>
+        <thead><tr><th style="width:26%">Elemento</th><th style="width:20%">Forma</th><th>Uso</th></tr></thead>
+        <tbody>
+          <tr><td>Cliente (app/dispositivo)</td><td>Óvalo</td><td>Punto de entrada del usuario, mensajero u operador</td></tr>
+          <tr><td>Servidor / servicio</td><td>Rectángulo</td><td>Componente de cómputo (API Gateway, módulo de procesamiento, etc.)</td></tr>
+          <tr><td>Base de datos</td><td>Cilindro</td><td>Almacenamiento persistente</td></tr>
+          <tr><td>Zona / región / capa</td><td>Subgrafo con borde punteado</td><td>Agrupación geográfica o lógica de componentes</td></tr>
+          <tr><td>Componente en riesgo</td><td>Rectángulo rojo con ⚠️</td><td>Elemento diagnosticado como punto único de falla, cuello de botella o límite de escalabilidad</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ METODOLOGÍA ============ -->
+  <section class="sheet" id="metodologia">
+    <div class="sheet-inner">
+      <p class="ref">03 · El método</p>
+      <h2>Cinco pasos: mapa + diagnóstico</h2>
+      <p class="lede" style="margin-bottom:18px">A diferencia de un diagrama puramente estructural, este taller pide un mapa y un diagnóstico. Los primeros tres pasos construyen el mapa; los últimos dos lo convierten en un análisis de riesgos.</p>
+      <div class="steps">
+        <div class="step"><span class="n">Paso 1</span><div><h3>Identificar componentes</h3><p>Liste los servidores, servicios, bases de datos, balanceadores y demás piezas de infraestructura que soportan el sistema.</p></div></div>
+        <div class="step"><span class="n">Paso 2</span><div><h3>Agrupar por zona/capa</h3><p>Clasifique los componentes por capa (cliente, aplicación, datos) y/o por zona geográfica, y trace el límite de cada agrupación.</p></div></div>
+        <div class="step"><span class="n">Paso 3</span><div><h3>Conectar los componentes</h3><p>Trace las conexiones de red entre componentes, indicando la dirección del tráfico.</p></div></div>
+        <div class="step"><span class="n">Paso 4</span><div><h3>Marcar redundancia y capacidad</h3><p>Para cada componente crítico, indique si tiene redundancia (una instancia única es un riesgo) o si es un cuello de botella conocido.</p></div></div>
+        <div class="step"><span class="n">Paso 5</span><div><h3>Diagnosticar y priorizar</h3><p>A partir de las marcas del paso anterior, identifique los riesgos (puntos únicos de falla, cuellos de botella, límites de escalabilidad) y priorícelos por impacto.</p></div></div>
+      </div>
+      <div class="callout" style="margin-top:20px">
+        <p><strong>Regla que no se negocia:</strong> cada riesgo del informe debe señalar el componente exacto del mapa que lo origina. Un diagnóstico sin relación directa con el mapa dibujado queda desconectado del modelo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DIAGNÓSTICO PRIORIZADO ============ -->
+  <section class="sheet" id="diagnostico">
+    <div class="sheet-inner">
+      <p class="ref">04 · El hallazgo</p>
+      <h2>Tabla de diagnóstico priorizado</h2>
+      <p class="lede" style="margin-bottom:18px">Los tres riesgos que resultan de aplicar el paso 5 de la metodología sobre el mapa de RedExpress — son los mismos tres componentes marcados con ⚠️ en el diagrama interactivo.</p>
+      <table>
+        <thead>
+          <tr><th style="width:22%">Componente</th><th style="width:20%">Riesgo diagnosticado</th><th style="width:13%">Categoría</th><th>Impacto si ocurre</th><th style="width:9%">Prioridad</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Balanceador de Carga (instancia única)</td><td>Punto único de falla</td><td>Disponibilidad</td><td>Toda la plataforma queda inaccesible</td><td class="prio-alta">Alta</td></tr>
+          <tr><td>Base de Datos Distribuida (escritura única en Bogotá)</td><td>Cuello de botella de latencia</td><td>Rendimiento</td><td>Lentitud en el rastreo en tiempo real para mensajeros fuera de Bogotá</td><td class="prio-alta">Alta</td></tr>
+          <tr><td>Región Medellín sin módulo de rutas propio</td><td>Límite de escalabilidad geográfica</td><td>Escalabilidad</td><td>No se puede atender el crecimiento de demanda en Medellín sin saturar Bogotá</td><td class="prio-media">Media</td></tr>
+        </tbody>
+      </table>
+      <p class="note" style="margin-top:12px">"Cuello de botella" y "punto único de falla" son riesgos distintos: uno es de rendimiento, otro es de disponibilidad total. Clasificar cada hallazgo evita confundirlos.</p>
+    </div>
+  </section>
+
+  <!-- ============ ERRORES COMUNES ============ -->
+  <section class="sheet" id="errores">
+    <div class="sheet-inner">
+      <p class="ref">05 · Antes de entregar</p>
+      <h2>Errores comunes a evitar</h2>
+      <table>
+        <thead><tr><th style="width:28%">Error frecuente</th><th style="width:32%">Por qué es un problema</th><th>Cómo corregirlo</th></tr></thead>
+        <tbody>
+          <tr><td>Dibujar todos los componentes sin agrupar por capa o zona</td><td>Dificulta ver dónde están concentrados los riesgos geográficos</td><td>Agrupe por región/capa como en el paso 2</td></tr>
+          <tr><td>Listar componentes sin marcar redundancia</td><td>El diagnóstico de puntos únicos de falla se vuelve una suposición, no un hallazgo del mapa</td><td>Indique junto a cada componente crítico si tiene redundancia o es instancia única</td></tr>
+          <tr><td>Diagnóstico sin relación directa con el mapa dibujado</td><td>El informe queda desconectado del modelo, y la rúbrica pide justificación técnica basada en el mapa</td><td>Cada riesgo del informe debe señalar el componente exacto del mapa que lo origina</td></tr>
+          <tr><td>Confundir "cuello de botella" con "punto único de falla"</td><td>Son riesgos distintos: uno es de rendimiento, otro es de disponibilidad total</td><td>Clasifique cada hallazgo en una categoría (disponibilidad, rendimiento, escalabilidad) como en la tabla de diagnóstico</td></tr>
+        </tbody>
+      </table>
+      <div class="cols c2" style="margin-top:22px">
+        <div class="block controlline">
+          <h3>Checklist antes de entregar</h3>
+          <p>Todos los componentes relevantes representados · agrupados por zona/región o capa · cada conexión relevante trazada · componentes críticos con redundancia marcada · cada riesgo clasificado y priorizado · diagnóstico con referencia explícita a los componentes del mapa.</p>
+        </div>
+        <div class="block threatline">
+          <h3>Lo que debilita la entrega</h3>
+          <p>Componentes sin agrupar por zona, redundancia sin marcar, un diagnóstico genérico que no señala el componente exacto del mapa, o mezclar categorías de riesgo distintas en un solo hallazgo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ARCHIMATE ============ -->
+  <section class="sheet" id="archimate">
+    <div class="sheet-inner">
+      <p class="ref">06 · Trazabilidad entre talleres</p>
+      <h2>Vista ArchiMate equivalente</h2>
+      <p class="lede" style="margin-bottom:18px">Los componentes del mapa de infraestructura mapean a la capa de Tecnología de ArchiMate: servidores y balanceadores son <strong>Nodes/Devices</strong>, y cada uno se conecta al <strong>Application Component</strong> (Taller 3) que aloja mediante la relación <strong>Assignment</strong>.</p>
+      <div class="cols c2">
+        <div class="block inkline">
+          <h3>De la infraestructura a la aplicación</h3>
+          <p>El Nodo de Aplicación "sirve a" el balanceador de carga y queda "asignado a" el Módulo de Gestión de Paquetes del Taller 3 — la misma relación Assignment que conecta Tecnología con Aplicación en ArchiMate.</p>
+        </div>
+        <div class="block controlline">
+          <h3>De este taller al Taller 7</h3>
+          <p>El componente marcado como riesgo en la tabla de diagnóstico (paso 5) es exactamente el mismo Device/Node que después, en el Taller 7, se convierte en el origen de un Gap de la capa de Implementación y Migración — la trazabilidad no se pierde entre talleres, solo cambia la capa de ArchiMate en la que se mira.</p>
+        </div>
+      </div>
+      <p class="note" style="margin-top:16px">Ver la <a href="https://github.com/CesarAVegaF312/AREM-ArchiMate/blob/main/guia_notacion_archimate.md">Guía de Notación ArchiMate</a> para la notación completa de Nodes, Devices y Application Components.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>AREM · Módulo 4 · Mapa de infraestructura y diagnóstico técnico · Universidad de La Sabana</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Datos: zonas, componentes y flujos del mapa de RedExpress
+   (idénticos a los diagramas Mermaid progresivos de la guía)
+   ============================================================ */
+const ZONES = [
+  {x:20,  y:20,  w:210, h:600, label:"ZONA · CLIENTES"},
+  {x:270, y:20,  w:230, h:600, label:"ZONA · BORDE / GLOBAL"},
+  {x:540, y:20,  w:200, h:330, label:"ZONA · REGIÓN BOGOTÁ"},
+  {x:540, y:380, w:200, h:200, label:"ZONA · REGIÓN MEDELLÍN"}
+];
+
+const NODES = [
+  {id:"usuario",   label:"App Móvil · Usuario Final", sub:"cliente",        x:40,  y:64,  w:170, h:56, kind:"ext"},
+  {id:"mensajero", label:"App Móvil · Mensajero",     sub:"cliente",        x:40,  y:144, w:170, h:56, kind:"ext"},
+  {id:"operador",  label:"Portal Web · Operador",     sub:"cliente",        x:40,  y:224, w:170, h:56, kind:"ext"},
+
+  {id:"lb", label:"Balanceador de Carga", sub:"instancia única", x:290, y:70,  w:190, h:64, kind:"proc",
+    risk:{
+      titulo:"Balanceador de Carga (instancia única)",
+      riesgo:"Punto único de falla",
+      categoria:"Disponibilidad",
+      letra:"D",
+      impacto:"Toda la plataforma queda inaccesible.",
+      prioridad:"Alta"
+    }},
+  {id:"monitor", label:"Servicio de Monitoreo y Alertas", sub:"proceso", x:290, y:300, w:190, h:56, kind:"proc"},
+  {id:"db", label:"Base de Datos Distribuida", sub:"escritura única · Bogotá", x:290, y:500, w:190, h:64, kind:"store",
+    risk:{
+      titulo:"Base de Datos Distribuida (escritura única en Bogotá)",
+      riesgo:"Cuello de botella de latencia",
+      categoria:"Rendimiento",
+      letra:"R",
+      impacto:"Lentitud en el rastreo en tiempo real para mensajeros fuera de Bogotá.",
+      prioridad:"Alta"
+    }},
+
+  {id:"gwbog",    label:"API Gateway · Bogotá", sub:"proceso", x:560, y:70,  w:160, h:56, kind:"proc"},
+  {id:"rutasbog", label:"Módulo de Rutas y Paquetes", sub:"Bogotá", x:560, y:190, w:160, h:80, kind:"proc"},
+
+  {id:"gwmed", label:"API Gateway · Medellín", sub:"sin módulo de rutas propio", x:560, y:440, w:160, h:80, kind:"proc",
+    risk:{
+      titulo:"API Gateway – Medellín (sin módulo de rutas propio)",
+      riesgo:"Límite de escalabilidad geográfica",
+      categoria:"Escalabilidad",
+      letra:"E",
+      impacto:"No se puede atender el crecimiento de demanda en Medellín sin saturar Bogotá.",
+      prioridad:"Media"
+    }}
+];
+
+const FLOWS = [
+  {id:"f1", path:"M210,92 L290,102"},
+  {id:"f2", path:"M210,172 L290,102"},
+  {id:"f3", path:"M210,252 L290,102"},
+  {id:"f4", path:"M480,102 L560,98"},
+  {id:"f5", path:"M385,134 L560,480"},
+  {id:"f6", path:"M640,126 L640,190"},
+  {id:"f7", path:"M640,440 L640,270", label:"cuello de botella"},
+  {id:"f8", path:"M560,230 L480,532"},
+  {id:"f9", path:"M560,98 L480,328",  dashed:true},
+  {id:"f10", path:"M560,480 L480,328", dashed:true}
+];
+
+const NODEFILL = {ext:"#5F7387", proc:"#14263C", store:"#27405C"};
+let selected = null;
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function midOf(path){
+  const nums = path.match(/-?\d+(\.\d+)?/g).map(Number);
+  const x1=nums[0], y1=nums[1], x2=nums[nums.length-2], y2=nums[nums.length-1];
+  return {x:(x1+x2)/2, y:(y1+y2)/2};
+}
+
+function renderDiagram(){
+  let s = `<svg class="dfd" viewBox="0 0 980 660" role="img" aria-label="Mapa de infraestructura de RedExpress por zonas">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5F7387"/>
+      </marker>
+    </defs>`;
+
+  ZONES.forEach(z=>{
+    s += `<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" fill="rgba(255,255,255,.4)" stroke="#B4552B" stroke-width="1.3" stroke-dasharray="6 5"/>
+    <text class="zlabel" x="${z.x+10}" y="${z.y+18}">${esc(z.label)}</text>`;
+  });
+
+  FLOWS.forEach(f=>{
+    s += `<path class="flowline ${f.dashed?'dashed':''}" d="${f.path}" marker-end="url(#ah)"/>`;
+    if(f.label){
+      const m = midOf(f.path);
+      s += `<rect x="${m.x-46}" y="${m.y-10}" width="92" height="19" fill="#F2F1EA" stroke="#B4552B"/>
+      <text class="flabel" x="${m.x}" y="${m.y+3}" text-anchor="middle" fill="#B4552B">${esc(f.label)}</text>`;
+    }
+  });
+
+  NODES.forEach(n=>{
+    const isRisk = !!n.risk;
+    const sel = selected===n.id;
+    const fill = isRisk ? "#B4552B" : NODEFILL[n.kind];
+    const r = n.kind==="store" ? 0 : 2;
+    s += `<g ${isRisk?`class="hit" tabindex="0" role="button" aria-pressed="${sel}" data-risk="${n.id}" aria-label="Ver diagnóstico: ${esc(n.risk.titulo)}"`:''}>
+      <rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${r}" fill="${fill}" stroke="${sel?'#14263C':'none'}" stroke-width="${sel?3:0}"/>
+      ${n.kind==="store" && !isRisk ? `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="6" fill="#B4552B"/>` : ``}
+      <text class="nlabel" x="${n.x+n.w/2}" y="${n.y+n.h/2-3}" text-anchor="middle" fill="#F2F1EA">${isRisk?'⚠️ ':''}${esc(n.label)}</text>
+      <text class="nsub" x="${n.x+n.w/2}" y="${n.y+n.h/2+13}" text-anchor="middle">${esc(n.sub)}</text>
+    </g>`;
+  });
+
+  s += `</svg>`;
+  document.getElementById("diagram").innerHTML = s;
+
+  document.querySelectorAll('[data-risk]').forEach(el=>{
+    el.addEventListener("click", ()=>selectRisk(el.dataset.risk));
+    el.addEventListener("keydown", e=>{
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); selectRisk(el.dataset.risk); }
+    });
+  });
+}
+
+function selectRisk(id){
+  selected = id;
+  renderDiagram();
+  const n = NODES.find(x=>x.id===id);
+  const r = n.risk;
+  const prioClass = r.prioridad==="Alta" ? "prio-alta" : "prio-media";
+  document.getElementById("detail").innerHTML = `
+    <p class="flowtitle">⚠ ${esc(r.titulo)}</p>
+    <p class="note" style="margin:0 0 14px">${esc(r.riesgo)}</p>
+    <div class="threat">
+      <div class="row">
+        <span class="letter" aria-hidden="true">${r.letra}</span>
+        <div>
+          <h4>${esc(r.categoria)}</h4>
+          <p>${esc(r.impacto)}</p>
+          <p class="ctrl ${prioClass}">Prioridad · ${esc(r.prioridad)}</p>
+        </div>
+      </div>
+    </div>`;
+}
+
+renderDiagram();
+</script>
+</body>
+</html>
