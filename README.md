@@ -1,22 +1,22 @@
-# 🛠️ Taller 4: Mapa de Infraestructura y Diagnóstico Técnico
+# Taller 4: Mapa de Infraestructura y Diagnóstico Técnico
 
-## 🎯 Objetivo
+## Objetivo
 
 Construir el mapa lógico y/o físico de la infraestructura tecnológica del sistema base y realizar un diagnóstico de debilidades, cuellos de botella y oportunidades de mejora.
 
 ---
 
-## 📘 Guía paso a paso
+## Guía paso a paso
 
 Antes de empezar a modelar, revise la [**Guía Paso a Paso: Mapa de Infraestructura y Diagnóstico Técnico**](clase/guia_paso_a_paso_infraestructura.md). Incluye la leyenda de notación, la metodología de 5 pasos (mapa + diagnóstico) que se usa en el taller, un ejemplo completo construido paso a paso sobre el caso de RedExpress con una tabla de diagnóstico priorizado, y una comparación de errores comunes.
 
-### 🖼️ Versión visual: Mapa de Infraestructura y Riesgo
+### Versión visual: Mapa de Infraestructura y Riesgo
 
-[`clase/visualizacion-infraestructura.html`](clase/visualizacion-infraestructura.html) es una página interactiva autocontenida: un mapa de infraestructura de RedExpress por zonas (Clientes, Borde/Global, Región Bogotá y Región Medellín) en el que los componentes marcados con ⚠️ (balanceador de carga, base de datos distribuida y API Gateway de Medellín) son clickeables y muestran su categoría de riesgo, impacto y prioridad; además incluye la leyenda de notación, la metodología de 5 pasos, la tabla de diagnóstico priorizado completa, los errores comunes a evitar y la vista ArchiMate equivalente. GitHub no la renderiza interactiva desde la vista de archivo; para verla:
+[`clase/visualizacion-infraestructura.html`](clase/visualizacion-infraestructura.html) es una página interactiva autocontenida: un mapa de infraestructura de RedExpress por zonas (Clientes, Borde/Global, Región Bogotá y Región Medellín) en el que los componentes marcados con (balanceador de carga, base de datos distribuida y API Gateway de Medellín) son clickeables y muestran su categoría de riesgo, impacto y prioridad; además incluye la leyenda de notación, la metodología de 5 pasos, la tabla de diagnóstico priorizado completa, los errores comunes a evitar y la vista ArchiMate equivalente. GitHub no la renderiza interactiva desde la vista de archivo; para verla:
 - Descargue el archivo y ábralo con doble clic (funciona sin conexión, es HTML plano), o
 - Pegue esta URL en [htmlpreview.github.io](https://htmlpreview.github.io/): `https://raw.githubusercontent.com/CesarAVegaF312/AREM-Taller_4_Infraestructura/main/clase/visualizacion-infraestructura.html`
 
-## 🚚 Caso base de referencia: RedExpress (Plataforma de Logística)
+## Caso base de referencia: RedExpress (Plataforma de Logística)
 
 RedExpress cuenta con una infraestructura híbrida que incluye servidores regionales, servicios en la nube, centros de distribución físicos y dispositivos móviles utilizados por los mensajeros. La plataforma digital debe garantizar alta disponibilidad y rendimiento, especialmente durante campañas promocionales o temporadas de alto volumen como Navidad. El mapa de infraestructura y el diagnóstico técnico permitirán visualizar riesgos como puntos únicos de falla, cuellos de botella en bases de datos, y limitaciones en la escalabilidad horizontal de servicios críticos.
 
@@ -40,7 +40,7 @@ RedExpress cuenta con una infraestructura híbrida que incluye servidores region
 
 ---
 
-## 🧪 Parte 1: Trabajo en Clase
+## Parte 1: Trabajo en Clase
 
 Durante la clase se espera que el equipo:
 
@@ -57,7 +57,7 @@ Siga la metodología de 5 pasos de la [guía paso a paso](clase/guia_paso_a_paso
 
 ---
 
-## 🧠 Parte 2: Aplicación al Cliente Real
+## Parte 2: Aplicación al Cliente Real
 
 Después de la clase, el equipo debe:
 
@@ -68,7 +68,7 @@ Después de la clase, el equipo debe:
 
 ---
 
-## 📁 Estructura esperada del repositorio
+## Estructura esperada del repositorio
 
 ```text
 taller-04-infraestructura/
@@ -89,11 +89,11 @@ taller-04-infraestructura/
 
 ---
 
-## ⚠️ Errores comunes
+## Errores comunes
 
 Antes de entregar, compare su mapa y diagnóstico contra los errores más frecuentes (componentes sin agrupar, redundancia sin marcar, diagnóstico desconectado del mapa) documentados en la [sección 4 de la guía paso a paso](clase/guia_paso_a_paso_infraestructura.md#4-errores-comunes-a-evitar).
 
-## 📤 Entregables
+## Entregables
 
 - Mapa de infraestructura del sistema del cliente
 - Informe de diagnóstico técnico
@@ -101,7 +101,7 @@ Antes de entregar, compare su mapa y diagnóstico contra los errores más frecue
 
 ---
 
-## 📊 Rúbrica de Evaluación
+## Rúbrica de Evaluación
 
 | Criterio                            | Excelente (5)                                                             | Aceptable (3) / Insuficiente (1–2)                         |
 |-------------------------------------|----------------------------------------------------------------------------|-------------------------------------------------------------|
@@ -112,6 +112,6 @@ Antes de entregar, compare su mapa y diagnóstico contra los errores más frecue
 
 ---
 
-## ✅ Licencia
+## Licencia
 
 Este taller hace parte del curso de Arquitectura Empresarial - Universidad de La Sabana. Uso académico bajo licencia MIT.

@@ -144,7 +144,7 @@
   <section class="hero">
     <p class="ref">Universidad de La Sabana · Arquitectura Empresarial</p>
     <h1>Del inventario de componentes al diagnóstico de riesgo.</h1>
-    <p class="lede">RedExpress opera una infraestructura híbrida por zonas: clientes, borde global y dos regiones con distinta madurez de despliegue. Esta hoja recorre el mapa de infraestructura del caso base y el diagnóstico técnico que se deriva de él — puntos únicos de falla, cuellos de botella y límites de escalabilidad — exactamente como se construyeron en la guía paso a paso. Empiece por el diagrama: los componentes marcados con ⚠️ son clickeables.</p>
+    <p class="lede">RedExpress opera una infraestructura híbrida por zonas: clientes, borde global y dos regiones con distinta madurez de despliegue. Esta hoja recorre el mapa de infraestructura del caso base y el diagnóstico técnico que se deriva de él — puntos únicos de falla, cuellos de botella y límites de escalabilidad — exactamente como se construyeron en la guía paso a paso. Empiece por el diagrama: los componentes marcados con son clickeables.</p>
   </section>
 
   <!-- ============ MAPA INTERACTIVO ============ -->
@@ -160,7 +160,7 @@
       <div class="panel">
         <p class="ref">Diagnóstico</p>
         <div id="detail">
-          <div class="empty">Seleccione un componente marcado con ⚠️ para ver su categoría de riesgo, el impacto si ocurre y la prioridad de atención, tal como está en la tabla de diagnóstico.</div>
+          <div class="empty">Seleccione un componente marcado en rojo para ver su categoría de riesgo, el impacto si ocurre y la prioridad de atención, tal como está en la tabla de diagnóstico.</div>
         </div>
       </div>
     </div>
@@ -179,7 +179,7 @@
           <tr><td>Servidor / servicio</td><td>Rectángulo</td><td>Componente de cómputo (API Gateway, módulo de procesamiento, etc.)</td></tr>
           <tr><td>Base de datos</td><td>Cilindro</td><td>Almacenamiento persistente</td></tr>
           <tr><td>Zona / región / capa</td><td>Subgrafo con borde punteado</td><td>Agrupación geográfica o lógica de componentes</td></tr>
-          <tr><td>Componente en riesgo</td><td>Rectángulo rojo con ⚠️</td><td>Elemento diagnosticado como punto único de falla, cuello de botella o límite de escalabilidad</td></tr>
+          <tr><td>Componente en riesgo</td><td>Rectángulo rojo</td><td>Elemento diagnosticado como punto único de falla, cuello de botella o límite de escalabilidad</td></tr>
         </tbody>
       </table>
     </div>
@@ -209,7 +209,7 @@
     <div class="sheet-inner">
       <p class="ref">04 · El hallazgo</p>
       <h2>Tabla de diagnóstico priorizado</h2>
-      <p class="lede" style="margin-bottom:18px">Los tres riesgos que resultan de aplicar el paso 5 de la metodología sobre el mapa de RedExpress — son los mismos tres componentes marcados con ⚠️ en el diagrama interactivo.</p>
+      <p class="lede" style="margin-bottom:18px">Los tres riesgos que resultan de aplicar el paso 5 de la metodología sobre el mapa de RedExpress — son los mismos tres componentes marcados con en el diagrama interactivo.</p>
       <table>
         <thead>
           <tr><th style="width:22%">Componente</th><th style="width:20%">Riesgo diagnosticado</th><th style="width:13%">Categoría</th><th>Impacto si ocurre</th><th style="width:9%">Prioridad</th></tr>
@@ -383,7 +383,7 @@ function renderDiagram(){
     s += `<g ${isRisk?`class="hit" tabindex="0" role="button" aria-pressed="${sel}" data-risk="${n.id}" aria-label="Ver diagnóstico: ${esc(n.risk.titulo)}"`:''}>
       <rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${r}" fill="${fill}" stroke="${sel?'#14263C':'none'}" stroke-width="${sel?3:0}"/>
       ${n.kind==="store" && !isRisk ? `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="6" fill="#B4552B"/>` : ``}
-      <text class="nlabel" x="${n.x+n.w/2}" y="${n.y+n.h/2-3}" text-anchor="middle" fill="#F2F1EA">${isRisk?'⚠️ ':''}${esc(n.label)}</text>
+      <text class="nlabel" x="${n.x+n.w/2}" y="${n.y+n.h/2-3}" text-anchor="middle" fill="#F2F1EA">${esc(n.label)}</text>
       <text class="nsub" x="${n.x+n.w/2}" y="${n.y+n.h/2+13}" text-anchor="middle">${esc(n.sub)}</text>
     </g>`;
   });
@@ -406,7 +406,7 @@ function selectRisk(id){
   const r = n.risk;
   const prioClass = r.prioridad==="Alta" ? "prio-alta" : "prio-media";
   document.getElementById("detail").innerHTML = `
-    <p class="flowtitle">⚠ ${esc(r.titulo)}</p>
+    <p class="flowtitle">${esc(r.titulo)}</p>
     <p class="note" style="margin:0 0 14px">${esc(r.riesgo)}</p>
     <div class="threat">
       <div class="row">

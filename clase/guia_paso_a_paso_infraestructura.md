@@ -1,4 +1,4 @@
-# 🧭 Guía Paso a Paso: Mapa de Infraestructura y Diagnóstico Técnico
+# Guía Paso a Paso: Mapa de Infraestructura y Diagnóstico Técnico
 
 Esta guía complementa el `README.md` del taller. Su objetivo es que, antes de construir el mapa de infraestructura de RedExpress en clase (Parte 1) o el del cliente real (Parte 2), el equipo tenga una referencia clara de la notación y de la metodología para pasar de un inventario de componentes a un diagnóstico técnico priorizado.
 
@@ -14,14 +14,14 @@ Los diagramas de ejemplo de esta guía están escritos en [Mermaid](https://merm
 | Servidor / servicio | Rectángulo | Componente de cómputo (API Gateway, módulo de procesamiento, etc.) |
 | Base de datos | Cilindro | Almacenamiento persistente |
 | Zona / región / capa | Subgrafo con borde punteado | Agrupación geográfica o lógica de componentes |
-| Componente en riesgo | Rectángulo rojo con ⚠️ | Elemento diagnosticado como punto único de falla, cuello de botella o límite de escalabilidad |
+| Componente en riesgo | Rectángulo rojo | Elemento diagnosticado como punto único de falla, cuello de botella o límite de escalabilidad |
 
 ```mermaid
 flowchart LR
-    cli(["📱 Cliente"])
+    cli(["Cliente"])
     srv["Servidor / servicio"]
     db[("Base de datos")]
-    risk["⚠️ Componente en riesgo"]
+    risk["Componente en riesgo"]
 
     subgraph zona["Zona / región"]
         srv
@@ -55,9 +55,9 @@ Del caso base se extraen los componentes de infraestructura: los tres puntos de 
 
 ```mermaid
 flowchart TD
-    usuario(["📱 App Móvil - Usuario Final"])
-    mensajero(["📱 App Móvil - Mensajero"])
-    operador(["💻 Portal Web - Operador"])
+    usuario(["App Móvil - Usuario Final"])
+    mensajero(["App Móvil - Mensajero"])
+    operador(["Portal Web - Operador"])
     lb["Balanceador de Carga"]
     gwbog["API Gateway - Bogotá"]
     gwmed["API Gateway - Medellín"]
@@ -73,9 +73,9 @@ Se agrupan los componentes en cuatro zonas: **Clientes**, **Borde / Global** (lo
 ```mermaid
 flowchart TD
     subgraph clientes["Clientes"]
-        usuario(["📱 App Móvil - Usuario Final"])
-        mensajero(["📱 App Móvil - Mensajero"])
-        operador(["💻 Portal Web - Operador"])
+        usuario(["App Móvil - Usuario Final"])
+        mensajero(["App Móvil - Mensajero"])
+        operador(["Portal Web - Operador"])
     end
 
     subgraph borde["Borde / Global"]
@@ -101,9 +101,9 @@ Se traza el tráfico: los clientes entran por el balanceador, que enruta a cada 
 ```mermaid
 flowchart TD
     subgraph clientes["Clientes"]
-        usuario(["📱 App Móvil - Usuario Final"])
-        mensajero(["📱 App Móvil - Mensajero"])
-        operador(["💻 Portal Web - Operador"])
+        usuario(["App Móvil - Usuario Final"])
+        mensajero(["App Móvil - Mensajero"])
+        operador(["Portal Web - Operador"])
     end
 
     subgraph borde["Borde / Global"]
@@ -140,9 +140,9 @@ Se anota junto a cada componente crítico si tiene redundancia o no. El balancea
 ```mermaid
 flowchart TD
     subgraph clientes["Clientes"]
-        usuario(["📱 App Móvil - Usuario Final"])
-        mensajero(["📱 App Móvil - Mensajero"])
-        operador(["💻 Portal Web - Operador"])
+        usuario(["App Móvil - Usuario Final"])
+        mensajero(["App Móvil - Mensajero"])
+        operador(["Portal Web - Operador"])
     end
 
     subgraph borde["Borde / Global"]
@@ -179,15 +179,15 @@ Con las marcas del paso anterior, se resaltan los componentes en riesgo y se doc
 ```mermaid
 flowchart TD
     subgraph clientes["Clientes"]
-        usuario(["📱 App Móvil - Usuario Final"])
-        mensajero(["📱 App Móvil - Mensajero"])
-        operador(["💻 Portal Web - Operador"])
+        usuario(["App Móvil - Usuario Final"])
+        mensajero(["App Móvil - Mensajero"])
+        operador(["Portal Web - Operador"])
     end
 
     subgraph borde["Borde / Global"]
-        lb["⚠️ Balanceador de Carga (instancia única)"]
+        lb["Balanceador de Carga (instancia única)"]
         monitor["Servicio de Monitoreo y Alertas"]
-        db[("⚠️ Base de Datos Distribuida (escritura única - Bogotá)")]
+        db[("Base de Datos Distribuida (escritura única - Bogotá)")]
     end
 
     subgraph bogota["Región Bogotá"]
@@ -196,7 +196,7 @@ flowchart TD
     end
 
     subgraph medellin["Región Medellín"]
-        gwmed["⚠️ API Gateway - Medellín (sin módulo de rutas propio)"]
+        gwmed["API Gateway - Medellín (sin módulo de rutas propio)"]
     end
 
     usuario --> lb
@@ -258,7 +258,7 @@ flowchart TD
         gestion["Módulo de Gestión de Paquetes"]
     end
     subgraph tecnologia["Tecnología"]
-        lb["⚠️ Balanceador de Carga"]
+        lb["Balanceador de Carga"]
         nodo["Nodo de Aplicación"]
     end
 
