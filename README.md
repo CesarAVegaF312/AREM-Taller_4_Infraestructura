@@ -10,7 +10,7 @@ Construir el mapa lógico y/o físico de la infraestructura tecnológica del sis
 
 Antes de empezar a modelar, revise la [**Guía Paso a Paso: Mapa de Infraestructura y Diagnóstico Técnico**](clase/guia_paso_a_paso_infraestructura.md). Incluye la leyenda de notación, la metodología de 5 pasos (mapa + diagnóstico) que se usa en el taller, un ejemplo completo construido paso a paso sobre el caso de RedExpress con una tabla de diagnóstico priorizado, y una comparación de errores comunes.
 
-La presentación de la clase está en [`5. Infraestructura_Topologias.pptx`](5.%20Infraestructura_Topologias.pptx) (versión para estudiantes, sin notas del orador).
+La presentación de la clase está en [`4. Infraestructura_Topologias.pptx`](4.%20Infraestructura_Topologias.pptx) (versión para estudiantes, sin notas del orador).
 
 ### Versión visual: Mapa de Infraestructura y Riesgo
 
