@@ -275,4 +275,63 @@ El componente marcado como riesgo en la tabla de diagnóstico (Paso 5) es exacta
 
 ---
 
+## 7. Validación técnica del diagnóstico (opcional)
+
+La tabla de diagnóstico del Paso 5 dice, por ejemplo, que si el balanceador cae "toda la plataforma queda inaccesible". Esta sección propone **comprobarlo en vez de suponerlo**: se levanta una maqueta del mapa en Docker, se apaga un componente y se observa qué pasa. No es un ejercicio de programación ni de administración de servidores: la maqueta del caso base ya está lista en [`validacion-tecnica/`](validacion-tecnica/) y los experimentos son comandos de una línea.
+
+### 7.1 Qué se necesita
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (o Docker Engine en Linux).
+- Una terminal con `curl` (incluido en macOS, Linux y Windows 10/11; en PowerShell escriba `curl.exe`) o, en su lugar, el navegador.
+
+### 7.2 Del mapa a la maqueta
+
+Cada elemento del mapa tiene su equivalente en [`docker-compose.yml`](validacion-tecnica/docker-compose.yml):
+
+| En el mapa | En la maqueta |
+|---|---|
+| Componente (balanceador, API Gateway, módulo de rutas, base de datos) | Un servicio (`balanceador`, `gateway-bogota`, `gateway-medellin`, `rutas-bogota`, `base-datos`) |
+| Zona o región (Borde, Bogotá, Medellín) | Una red (`borde`, `bogota`, `medellin`, `datos`) |
+| Conexión entre componentes | Un servicio conectado a la red del otro, y la regla de reenvío en su archivo `.conf` |
+| Instancia única / con redundancia | Número de copias del servicio (`--scale`) |
+
+Los servicios son simuladores: no calculan rutas reales. El módulo de rutas responde con su `Hostname` (qué copia contestó) y con el encabezado `X-Gateway` (por qué gateway llegó la solicitud). Con eso basta para ver por dónde viaja el tráfico.
+
+Construir la maqueta ya produce un hallazgo: el gateway de Medellín tiene que estar conectado a la red `bogota`, porque es la única forma de llegar al módulo de rutas. La dependencia entre regiones queda escrita en la configuración, no solo dibujada.
+
+### 7.3 Levantar la maqueta
+
+Desde la carpeta `clase/validacion-tecnica/`:
+
+```bash
+docker compose up -d
+curl http://localhost:8080/bogota/      # o abra la URL en el navegador
+curl http://localhost:8080/medellin/
+```
+
+Ambas solicitudes responden; las dos muestran el mismo `Hostname`, porque las dos regiones terminan en el mismo módulo de rutas de Bogotá.
+
+### 7.4 Experimentos: un riesgo del diagnóstico por experimento
+
+| # | Riesgo del Paso 5 | Experimento | Resultado esperado |
+|---|---|---|---|
+| E1 | Balanceador de carga: punto único de falla | `docker compose stop balanceador` y repetir los dos `curl` | Ninguna región responde, aunque todos los demás componentes siguen encendidos. Se confirma el impacto "toda la plataforma queda inaccesible". |
+| E2 | Región Medellín sin módulo de rutas propio | `docker compose start balanceador`, luego `docker compose stop rutas-bogota`, esperar 5 segundos y repetir los dos `curl` | Medellín también responde `502 Bad Gateway`, aunque su gateway está encendido: una falla en Bogotá tumba a Medellín. |
+| E3 | Mitigación: redundancia del módulo de rutas | `docker compose up -d --scale rutas-bogota=2`, repetir varias veces `curl http://localhost:8080/medellin/`, luego apagar una sola copia con `docker stop validacion-tecnica-rutas-bogota-1` | Primero contestan dos `Hostname` distintos. Al apagar una copia, el servicio sigue respondiendo con la otra: la redundancia sí elimina ese punto único de falla. |
+
+Use `docker compose ps` en cualquier momento para ver qué componentes están encendidos (es el "servicio de monitoreo" de la maqueta). Al terminar: `docker compose down`.
+
+El cuello de botella de la base de datos (latencia en el rastreo) no se puede comprobar con esta maqueta: medir rendimiento requiere carga y datos reales. Que un riesgo no se pueda validar así también es información útil para el informe.
+
+### 7.5 Aplicarlo al cliente real
+
+1. Copie la carpeta `validacion-tecnica/` a `entrega/validacion-tecnica/`.
+2. Ajuste `docker-compose.yml` a su `mapa-final.drawio`: un servicio por componente, una red por zona. Para componentes que no sean web (colas, almacenamiento, etc.), basta con un `traefik/whoami` que lo represente.
+3. Por cada riesgo de disponibilidad o escalabilidad de su tabla de diagnóstico, diseñe un experimento de apagado como los de la sección 7.4.
+4. En `entrega/informe.md`, agregue a la tabla de diagnóstico una columna **Validado en maqueta** (Sí / No / No aplica) y explique cualquier riesgo cuyo resultado haya sido distinto de lo esperado.
+
+> La maqueta se ejecuta siempre en el computador del equipo. Nunca se apagan, prueban ni sobrecargan componentes de la infraestructura real del cliente.
+
+---
+
 _Esta guía hace parte del Taller 4 de Mapa de Infraestructura y Diagnóstico Técnico — curso Arquitectura Empresarial, Universidad de La Sabana._

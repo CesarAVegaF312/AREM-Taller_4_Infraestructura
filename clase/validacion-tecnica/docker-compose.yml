@@ -1,0 +1,55 @@
+# Maqueta de la infraestructura de RedExpress (caso base del Taller 4).
+# Cada servicio es un componente del mapa y cada red es una zona.
+# Los servicios son simuladores: no procesan rutas reales, solo permiten
+# observar por dónde viaja el tráfico y qué pasa cuando un componente falla.
+#
+#   docker compose up -d
+#   curl http://localhost:8080/bogota/
+#   curl http://localhost:8080/medellin/
+#   docker compose down
+services:
+  # Borde / Global: punto de entrada único de los clientes (instancia única).
+  balanceador:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./balanceador.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [borde]
+    depends_on: [gateway-bogota, gateway-medellin]
+
+  # Región Bogotá
+  gateway-bogota:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./gateway-bogota.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [borde, bogota]
+    depends_on: [rutas-bogota]
+
+  rutas-bogota:
+    image: traefik/whoami:v1.10
+    networks: [bogota, datos]
+
+  # Región Medellín: no tiene módulo de rutas propio, así que su gateway
+  # también se conecta a la red de Bogotá (dependencia entre regiones).
+  gateway-medellin:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./gateway-medellin.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [borde, medellin, bogota]
+    depends_on: [rutas-bogota]
+
+  # Base de datos con escritura única en Bogotá.
+  base-datos:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: redexpress
+      POSTGRES_PASSWORD: redexpress
+      POSTGRES_DB: redexpress
+    networks: [datos]
+
+networks:
+  borde:
+  bogota:
+  medellin:
+  datos:

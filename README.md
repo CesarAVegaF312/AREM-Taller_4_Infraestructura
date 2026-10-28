@@ -70,6 +70,12 @@ Después de la clase, el equipo debe:
 
 ---
 
+## Validación técnica (opcional)
+
+Para comprobar el diagnóstico en vez de suponerlo, el equipo puede levantar una maqueta del mapa con Docker Compose (un servicio por componente, una red por zona) y apagar componentes para ver qué pasa: si el balanceador es de verdad un punto único de falla, o si una región depende de otra. No es un ejercicio de programación: la maqueta de RedExpress ya está lista en [`clase/validacion-tecnica/`](clase/validacion-tecnica/) y los experimentos son comandos de una línea. El procedimiento está en la [sección 7 de la guía paso a paso](clase/guia_paso_a_paso_infraestructura.md#7-validación-técnica-del-diagnóstico-opcional). Los resultados se documentan en `entrega/informe.md`, junto a la tabla de diagnóstico.
+
+---
+
 ## Estructura esperada del repositorio
 
 ```text
