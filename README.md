@@ -70,9 +70,11 @@ Después de la clase, el equipo debe:
 
 ---
 
-## Validación técnica (opcional)
+## Validación técnica, análisis de casos y tecnología (opcional)
 
 Para comprobar el diagnóstico en vez de suponerlo, el equipo puede levantar una maqueta del mapa con Docker Compose (un servicio por componente, una red por zona) y apagar componentes para ver qué pasa: si el balanceador es de verdad un punto único de falla, o si una región depende de otra. No es un ejercicio de programación: la maqueta de RedExpress ya está lista en [`clase/validacion-tecnica/`](clase/validacion-tecnica/) y los experimentos son comandos de una línea. El procedimiento está en la [sección 7 de la guía paso a paso](clase/guia_paso_a_paso_infraestructura.md#7-validación-técnica-del-diagnóstico-opcional). Los resultados se documentan en `entrega/informe.md`, junto a la tabla de diagnóstico.
+
+**Análisis de casos reales y tecnología.** La [sección 8 de la guía](clase/guia_paso_a_paso_infraestructura.md#8-análisis-de-casos-reales-y-panorama-tecnológico-opcional) analiza dos casos que muestran estos riesgos a escala real (la caída de la región us-east-1 de AWS en 2025 y el ataque de ransomware a IFX Networks en Colombia en 2023) y presenta el panorama de tecnologías de balanceo, redundancia, monitoreo y recuperación. El equipo analiza un caso del sector de su cliente con la [plantilla de análisis de caso](plantillas/plantilla_analisis_caso.md) en `entrega/analisis-caso.md`.
 
 ---
 
