@@ -10,13 +10,11 @@ Construir el mapa lógico y/o físico de la infraestructura tecnológica del sis
 
 Antes de empezar a modelar, revise la [**Guía Paso a Paso: Mapa de Infraestructura y Diagnóstico Técnico**](clase/guia_paso_a_paso_infraestructura.md). Incluye la leyenda de notación, la metodología de 5 pasos (mapa + diagnóstico) que se usa en el taller, un ejemplo completo construido paso a paso sobre el caso de RedExpress con una tabla de diagnóstico priorizado, y una comparación de errores comunes.
 
-La presentación de la clase está en [`5. Infraestructura_Topologias.pptx`](5.%20Infraestructura_Topologias.pptx) (versión para estudiantes, sin notas del orador).
+La presentación de la clase está en [`4. Infraestructura_Topologias.pptx`](4.%20Infraestructura_Topologias.pptx) (versión para estudiantes, sin notas del orador).
 
 ### Versión visual: Mapa de Infraestructura y Riesgo
 
-[`clase/visualizacion-infraestructura.html`](clase/visualizacion-infraestructura.html) es una página interactiva autocontenida: un mapa de infraestructura de RedExpress por zonas (Clientes, Borde/Global, Región Bogotá y Región Medellín) en el que los componentes marcados con (balanceador de carga, base de datos distribuida y API Gateway de Medellín) son clickeables y muestran su categoría de riesgo, impacto y prioridad; además incluye la leyenda de notación, la metodología de 5 pasos, la tabla de diagnóstico priorizado completa, los errores comunes a evitar y la vista ArchiMate equivalente. GitHub no la renderiza interactiva desde la vista de archivo; para verla:
-- Descargue el archivo y ábralo con doble clic (funciona sin conexión, es HTML plano), o
-- Pegue esta URL en [htmlpreview.github.io](https://htmlpreview.github.io/): `https://raw.githubusercontent.com/CesarAVegaF312/AREM-Taller_4_Infraestructura/main/clase/visualizacion-infraestructura.html`
+[`clase/visualizacion-infraestructura.html`](clase/visualizacion-infraestructura.html) es una página interactiva autocontenida: un mapa de infraestructura de RedExpress por zonas (Clientes, Borde/Global, Región Bogotá y Región Medellín) en el que los componentes marcados con (balanceador de carga, base de datos distribuida y API Gateway de Medellín) son clickeables y muestran su categoría de riesgo, impacto y prioridad; además incluye la leyenda de notación, la metodología de 5 pasos, la tabla de diagnóstico priorizado completa, los errores comunes a evitar y la vista ArchiMate equivalente. Ábrala directamente en el navegador: **[ver la página interactiva](https://cesaravegaf312.github.io/AREM-Taller_4_Infraestructura/clase/visualizacion-infraestructura.html)**. También puede descargar el archivo y abrirlo con doble clic; funciona sin conexión.
 
 ## Caso base de referencia: RedExpress (Plataforma de Logística)
 
